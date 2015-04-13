@@ -4,7 +4,11 @@ OBJCP=$(CROSS_COMPILE)objcopy
 LD=$(CROSS_COMPILE)ld
 OBJDMP=$(CROSS_COMPILE)objdump
 CFLAGS=-g
+
+SCRIPT=image-sram.lds
+
 all: uimage
+
 
 OBJS = main.o start.o
 
@@ -13,7 +17,7 @@ start.o: start.S
 main.o: main.c
 
 image.elf: $(OBJS) image.lds
-	$(LD) -T image.lds $(OBJS) -o $@
+	$(LD) -T $(SCRIPT) $(OBJS) -o $@ -Map=image.map
 	$(OBJDMP) -d $@ > $(@:.elf=.s)
 
 image.bin: image.elf
