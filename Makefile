@@ -4,7 +4,7 @@ OBJCP=arm-none-eabi-objcopy
 LD=arm-none-eabi-ld
 OBJDMP=$(CROSS_COMPILE)objdump
 CFLAGS=-g
-all: image
+all: uimage
 
 OBJS = main.o start.o
 
@@ -18,11 +18,13 @@ image.elf: $(OBJS) image.lds
 
 image: image.elf
 	$(OBJCP) -O binary $< $@
-	$(MAKE) uimage ADDR=`nm image.elf  |  awk '/_start/ {print $$1}'`
 
-uimage: image
+uimage-addr:
 	mkimage -A arm -O linux -T kernel -C none \
 		-a 0x${ADDR} -e 0x${ADDR} -n hello -d image uimage
+
+uimage: image
+	$(MAKE) uimage-addr ADDR=`nm image.elf  |  awk '/_start/ {print $$1}'`
 
 clean:
 	rm -f $(OBJS) image.elf image.s image uimage
