@@ -1,7 +1,7 @@
 CROSS_COMPILE=arm-none-eabi-
-CC=arm-none-eabi-gcc
-OBJCP=arm-none-eabi-objcopy
-LD=arm-none-eabi-ld
+CC=$(CROSS_COMPILE)gcc
+OBJCP=$(CROSS_COMPILE)objcopy
+LD=$(CROSS_COMPILE)ld
 OBJDMP=$(CROSS_COMPILE)objdump
 CFLAGS=-g
 all: uimage
@@ -16,14 +16,14 @@ image.elf: $(OBJS) image.lds
 	$(LD) -T image.lds $(OBJS) -o $@
 	$(OBJDMP) -d $@ > $(@:.elf=.s)
 
-image: image.elf
+image.bin: image.elf
 	$(OBJCP) -O binary $< $@
 
 uimage-addr:
 	mkimage -A arm -O linux -T kernel -C none \
-		-a 0x${ADDR} -e 0x${ADDR} -n hello -d image uimage
+		-a 0x${ADDR} -e 0x${ADDR} -n hello -d image.bin uimage
 
-uimage: image
+uimage: image.bin
 	$(MAKE) uimage-addr ADDR=`nm image.elf  |  awk '/_start/ {print $$1}'`
 
 clean:
