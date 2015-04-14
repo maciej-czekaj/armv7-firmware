@@ -5,9 +5,16 @@ LD=$(CROSS_COMPILE)ld
 OBJDMP=$(CROSS_COMPILE)objdump
 CFLAGS=-g
 
-SCRIPT=image-sram.lds
+ifeq ($(TARGET),qemu)
+	SCRIPT = image-ddr.lds
+	LDFLAGS=
+else
+	SCRIPT=image-sram.lds
+	BASE=0x20
+	LDFLAGS=-Ttext=$(BASE)
+endif
 
-all: uimage
+all: image.sunxi.bin uimage
 
 
 OBJS = main.o start.o
@@ -16,8 +23,8 @@ start.o: start.S
 
 main.o: main.c
 
-image.elf: $(OBJS) image.lds
-	$(LD) -T $(SCRIPT) $(OBJS) -o $@ -Map=image.map
+image.elf: $(OBJS) $(SCRIPT)
+	$(LD) -T $(SCRIPT) $(LDFLAGS) $(OBJS) -o $@ -Map=image.map
 	$(OBJDMP) -d $@ > $(@:.elf=.s)
 
 image.bin: image.elf
@@ -30,6 +37,9 @@ uimage-addr:
 uimage: image.bin
 	$(MAKE) uimage-addr ADDR=`nm image.elf  |  awk '/_start/ {print $$1}'`
 
+image.sunxi.bin: image.bin
+	./host/mksunxiboot $< $@
+
 clean:
-	rm -f $(OBJS) image.elf image.s image uimage
+	rm -f $(OBJS) image.elf image.s image*.bin uimage
 
