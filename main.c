@@ -54,7 +54,8 @@ void uart_puts(const char *s)
 
 void main(void)
 {
-	uart_init();
-	uart_puts("Hello world!");
+	*(int *)(0x3000) = 0x44444444;
+	//uart_init();
+	//uart_puts("Hello world!");
 }
 

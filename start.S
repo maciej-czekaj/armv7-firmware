@@ -19,10 +19,33 @@ _pad:			.word 0x12345678 /* now 16*4=64 */
 
 
 reset:
+	ldr	r1, =0x3000
+	mrs	r0, cpsr
+	str	r0,[r1,#16]
+	orr	r0, r0, #0xc0		@ disable FIQ and IRQ
+	msr	cpsr,r0
+	
+	str	sp,[r1,#8]
 	ldr	sp, =stack_top
+	ldr	r0, =0x33333333
+	ldr	r1, =0x3000
+	str	r0,[r1,#0]
+	str	lr,[r1,#4]
+
+#	and	r1, r0, #0x1f		@ mask mode bits
+#	teq	r1, #0x1a		@ test for HYP mode
+#	bicne	r0, r0, #0x1f		@ clear all mode bits
+#	orrne	r0, r0, #0x13		@ set SVC mode
+#	orr	r0, r0, #0xc0		@ disable FIQ and IRQ
+#	msr	cpsr,r0
+
+#	ldr	r0, =0xffff0020
 	bl	main
 end:
-	b .
+	ldr	r1, =0x3000
+	ldr	sp, [r1,#8]
+	str	pc, [r1,#12]
+	bx	lr
 
 undefined_instruction:
 	b .
