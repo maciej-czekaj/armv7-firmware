@@ -9,7 +9,7 @@ LD=$(CROSS_COMPILE)ld
 OBJDMP=$(CROSS_COMPILE)objdump
 CFLAGS=-g
 
-FEL=$(SUNXI_TOOLS)/fel
+FEL=./host/fel
 
 ifeq ($(TARGET),qemu)
 	SCRIPT = image-ddr.lds
@@ -50,10 +50,6 @@ clean:
 	rm -f $(OBJS) image.elf image.s image*.bin uimage
 
 fel: image.bin
-ifdef SUNXI_TOOLS
 	$(FEL) write $(BASE) $<
 	$(FEL) exe $(BASE)
 	$(FEL) version #checks if alive
-else
-	$(error "No SUNXI_TOOLS env variable")
-endif
