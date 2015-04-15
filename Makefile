@@ -1,4 +1,8 @@
-#CROSS_COMPILE=arm-none-eabi-
+
+ifndef CROSS_COMPILE
+$(error define CROSS_COMPILE env variable!)
+endif
+
 CC=$(CROSS_COMPILE)gcc
 OBJCP=$(CROSS_COMPILE)objcopy
 LD=$(CROSS_COMPILE)ld
@@ -46,6 +50,10 @@ clean:
 	rm -f $(OBJS) image.elf image.s image*.bin uimage
 
 fel: image.bin
+ifdef SUNXI_TOOLS
 	$(FEL) write $(BASE) $<
 	$(FEL) exe $(BASE)
 	$(FEL) version #checks if alive
+else
+	$(error "No SUNXI_TOOLS env variable")
+endif
