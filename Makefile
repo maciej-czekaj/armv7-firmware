@@ -14,13 +14,15 @@ FEL=./host/fel
 ifeq ($(TARGET),qemu)
 	SCRIPT = image-ddr.lds
 	LDFLAGS=
+	IMAGE=uimage
 else
 	SCRIPT=image-sram.lds
 	BASE=0x4000
 	LDFLAGS=-Ttext=$(BASE)
+	IMAGE=image.sunxi.bin
 endif
 
-all: image.sunxi.bin
+all: $(IMAGE)
 
 
 OBJS = main.o start.o
