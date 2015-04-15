@@ -5,6 +5,8 @@ LD=$(CROSS_COMPILE)ld
 OBJDMP=$(CROSS_COMPILE)objdump
 CFLAGS=-g
 
+FEL=$(SUNXI_TOOLS)/fel
+
 ifeq ($(TARGET),qemu)
 	SCRIPT = image-ddr.lds
 	LDFLAGS=
@@ -14,7 +16,7 @@ else
 	LDFLAGS=-Ttext=$(BASE)
 endif
 
-all: image.sunxi.bin uimage
+all: image.sunxi.bin
 
 
 OBJS = main.o start.o
@@ -43,3 +45,7 @@ image.sunxi.bin: image.bin
 clean:
 	rm -f $(OBJS) image.elf image.s image*.bin uimage
 
+fel: image.bin
+	$(FEL) write $(BASE) $<
+	$(FEL) exe $(BASE)
+	$(FEL) version #checks if alive

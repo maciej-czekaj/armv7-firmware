@@ -25,8 +25,38 @@
 #define DAT_LEN_8_BITS (3)
 #define LC_8_N_1          (NO_PARITY << 3 | ONE_STOP_BIT << 2 | DAT_LEN_8_BITS)
 
+typedef unsigned int u32;
+typedef unsigned short u16;
+typedef unsigned char u8;
+
+void delay(unsigned cycles)
+{
+	unsigned i;
+	for(i = 0; i < cycles; i++ )
+		__asm volatile ("nop"::);
+}
+
 void uart_init(void)
 {
+	/* Config APB clock gating for UART0 */
+	volatile u32 *reg = (u32 *)0x01c2006C;
+	unsigned port = 0;
+
+	*reg &= ~(1 << (16 + port));
+	// wait
+	delay(100);
+
+	*reg |=  (1 << (16 + port));
+
+	// Set UART0 RX & UART0_TX port mux
+	// PB22 && PB23
+	volatile u32 *PB2 = (u32 *)0x01C2082C;
+	*PB2 |= 2 << 28 | 2 << 24;
+
+	// Set pull up (2) for PB22 & PB23
+	volatile u32 *PB_PULL1 = (u32 *)0x01C20844;
+	*PB_PULL1 |= (2 << ((22-16)*2)) | (2 << ((23-16)*2));
+
 	/* select dll dlh */
 	writel(UART_LCR_DLAB, UART_LCR);
 	/* set baudrate */
@@ -34,6 +64,8 @@ void uart_init(void)
 	writel(BAUD_115200, UART_DLL);
 	/* set line control */
 	writel(LC_8_N_1, UART_LCR);
+
+	delay(100);
 }
 
 #define TX_READY (readl(UART_LSR) & UART_LSR_TEMT)
@@ -54,8 +86,10 @@ void uart_puts(const char *s)
 
 void main(void)
 {
-	*(int *)(0x3000) = 0x44444444;
-	//uart_init();
-	//uart_puts("Hello world!");
+	*(volatile int *)(0x3000) = 0x44444444;
+	uart_init();
+	writel('@', UART_THR);
+	uart_puts("Hello world!\n\r");
+	*(volatile int *)(0x3000) = 0x55555555;
 }
 
