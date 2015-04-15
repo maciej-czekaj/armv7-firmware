@@ -1,4 +1,4 @@
-CROSS_COMPILE=arm-none-eabi-
+#CROSS_COMPILE=arm-none-eabi-
 CC=$(CROSS_COMPILE)gcc
 OBJCP=$(CROSS_COMPILE)objcopy
 LD=$(CROSS_COMPILE)ld
@@ -10,7 +10,7 @@ ifeq ($(TARGET),qemu)
 	LDFLAGS=
 else
 	SCRIPT=image-sram.lds
-	BASE=0x20
+	BASE=0x4000
 	LDFLAGS=-Ttext=$(BASE)
 endif
 

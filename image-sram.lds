@@ -16,7 +16,7 @@ SECTIONS
 	
 	.stack : {	
 	. = ALIGN(8);
-	. = . + 0x100; /* 4kB of stack memory */
+	. = . + 0x400; /* 1kB of stack memory */
 	stack_top = .;
 	} > SRAM
 
