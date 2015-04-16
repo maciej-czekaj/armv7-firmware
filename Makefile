@@ -7,7 +7,7 @@ CC=$(CROSS_COMPILE)gcc
 OBJCP=$(CROSS_COMPILE)objcopy
 LD=$(CROSS_COMPILE)ld
 OBJDMP=$(CROSS_COMPILE)objdump
-CFLAGS=-g
+CFLAGS=-g -marm
 
 FEL=./host/fel
 
