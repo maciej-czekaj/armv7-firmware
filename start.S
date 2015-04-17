@@ -2,11 +2,10 @@
 
 _start:
 
-  /* Zapisz CPSR pod 0x3000 
-   * przydatne przy debugowaniu */
-  ldr  r1, =0x3000
+  /* saved_regs[15] = CPSR */
+  ldr  r1, =saved_regs
   mrs  r0, cpsr
-  str  r0,[r1,#0]
+  str  r0,[r1,#15*4]
 
   /* Zablokuj przerwania 
    * ustaw tryb na SVC */
@@ -15,29 +14,27 @@ _start:
   msr  cpsr,r0
 
   /* Zachowaj wszystkie rejestry
-   * pod 0x3010 */
-  add  r1,r1,#16
+   * do saved_regs[0-11] */
   stm  r1,{r2, r3, r4, r5, r6, r7, r8, r9, r10, fp, ip, sp, lr}
-  sub  r1,r1,#16
 
   /* Załaduj rejestr stosu */
   ldr  sp, =stack_top
  
   /* Daj znak przed wejściem do main() */
+  ldr r1,=debug
   ldr  r0, =0x33333333
-  str  r0,[r1,#4]
+  str  r0,[r1]
 
   bl  main
 
   /* Przyrwóć wartości rejestrów */
-  ldr  r1, =0x3000
-  add  r1,r1,#16
+  ldr  r1, =saved_regs
   ldm  r1,{r2, r3, r4, r5, r6, r7, r8, r9, r10, fp, ip, sp, lr}
 
   /* Daj znak że wszystko OK */
-  sub  r1,r1,#16
+  ldr r1,=debug
   ldr  r0, =0x77777777
-  str  r0, [r1,#4]
+  str  r0, [r1]
 
   /* Wróć do trybu FEL */
   bx  lr

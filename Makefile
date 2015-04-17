@@ -17,7 +17,7 @@ ifeq ($(TARGET),qemu)
 	IMAGE=uimage
 else
 	SCRIPT=image-sram.lds
-	BASE=0x4000
+	BASE=0x2000
 	LDFLAGS=-Ttext=$(BASE)
 	IMAGE=image.sunxi.bin
 endif

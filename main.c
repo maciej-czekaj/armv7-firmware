@@ -27,6 +27,10 @@
 
 #include <stdint.h>
 
+uint32_t saved_regs[16] = {0xcafebabe};
+
+volatile uint32_t debug = 0xdeadbeef;
+
 void delay(unsigned cycles)
 {
 	unsigned i;
@@ -83,11 +87,9 @@ void uart_puts(const char *s)
 
 void main(void)
 {
-	volatile uint32_t *debug = (uint32_t *)0x3008;
-	*debug = 0x44444444;
+	debug = 0x44444444;
 	uart_init();
-	writel('@', UART_THR);
 	uart_puts("Hello world!\n\r");
-	*debug = 0x55555555;
+	debug = 0x55555555;
 }
 
