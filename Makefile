@@ -55,3 +55,4 @@ fel: image.bin
 	$(FEL) write $(BASE) $<
 	$(FEL) exe $(BASE)
 	$(FEL) version #checks if alive
+	$(FEL) hex 0x3000 16

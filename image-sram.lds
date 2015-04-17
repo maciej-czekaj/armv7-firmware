@@ -1,24 +1,20 @@
-MEMORY { SRAM : ORIGIN = 0,
-		LENGTH = 0x10000 }
-MEMORY { DDR : ORIGIN = 0x40000000,
-		LENGTH = 0x40000000 }
-
 ENTRY(_start)
 SECTIONS
 {
+	. = 0x2000;
 	.text : 
 	{
 		start.o (.text)
 		*(.text) 
-	} > SRAM
-	.rodata : { *(.rodata) } > SRAM
-	.data : { *(.data) } > SRAM
+	}
+	.rodata : { *(.rodata) }
+	.data : { *(.data) }
 	
-	.stack : {	
+	.stack : {
 	. = ALIGN(8);
 	. = . + 0x400; /* 1kB of stack memory */
 	stack_top = .;
-	} > SRAM
+	}
 
-	.bss : { *(.bss COMMON) } > DDR
+	.bss : { *(.bss COMMON) }
 }

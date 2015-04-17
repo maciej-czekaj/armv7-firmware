@@ -1,8 +1,8 @@
 
 
-#define readb(a)			(*(volatile unsigned char *)(a))
-#define readw(a)			(*(volatile unsigned short *)(a))
-#define readl(a)			(*(volatile unsigned int *)(a))
+#define readb(a)		(*(volatile unsigned char *)(a))
+#define readw(a)		(*(volatile unsigned short *)(a))
+#define readl(a)		(*(volatile unsigned int *)(a))
 
 #define writeb(v,a)		(*(volatile unsigned char *)(a) = (v))
 #define writew(v,a)		(*(volatile unsigned short *)(a) = (v))
@@ -25,9 +25,7 @@
 #define DAT_LEN_8_BITS (3)
 #define LC_8_N_1          (NO_PARITY << 3 | ONE_STOP_BIT << 2 | DAT_LEN_8_BITS)
 
-typedef unsigned int u32;
-typedef unsigned short u16;
-typedef unsigned char u8;
+#include <stdint.h>
 
 void delay(unsigned cycles)
 {
@@ -39,7 +37,7 @@ void delay(unsigned cycles)
 void uart_init(void)
 {
 	/* Config APB clock gating for UART0 */
-	volatile u32 *reg = (u32 *)0x01c2006C;
+	volatile uint32_t *reg = (uint32_t *)0x01c2006C;
 	unsigned port = 0;
 
 	*reg &= ~(1 << (16 + port));
@@ -50,11 +48,11 @@ void uart_init(void)
 
 	// Set UART0 RX & UART0_TX port mux
 	// PB22 && PB23
-	volatile u32 *PB2 = (u32 *)0x01C2082C;
+	volatile uint32_t *PB2 = (uint32_t *)0x01C2082C;
 	*PB2 |= 2 << 28 | 2 << 24;
 
 	// Set pull up (2) for PB22 & PB23
-	volatile u32 *PB_PULL1 = (u32 *)0x01C20844;
+	volatile uint32_t *PB_PULL1 = (uint32_t *)0x01C20844;
 	*PB_PULL1 |= (2 << ((22-16)*2)) | (2 << ((23-16)*2));
 
 	/* select dll dlh */
@@ -83,13 +81,13 @@ void uart_puts(const char *s)
 		uart_putc(*s++);
 }
 
-
 void main(void)
 {
-	*(volatile int *)(0x3000) = 0x44444444;
+	volatile uint32_t *debug = (uint32_t *)0x3008;
+	*debug = 0x44444444;
 	uart_init();
 	writel('@', UART_THR);
 	uart_puts("Hello world!\n\r");
-	*(volatile int *)(0x3000) = 0x55555555;
+	*debug = 0x55555555;
 }
 

@@ -1,9 +1,8 @@
-static int x[2];
-static int y[2] = {0xbabababa};
+static int x[1];
+static int y[1] = {0xbabababa};
 
 void foo(const char *s,int *i, int *j) {}
 
 void _start(void) {
-  int a = 0xdeadbeef;
-  foo("Hello World %x\n", y, x);
+  foo("Hello World", y, x);
 }
