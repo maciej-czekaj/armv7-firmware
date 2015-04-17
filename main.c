@@ -1,5 +1,4 @@
 
-
 #define readb(a)		(*(volatile unsigned char *)(a))
 #define readw(a)		(*(volatile unsigned short *)(a))
 #define readl(a)		(*(volatile unsigned int *)(a))
@@ -26,8 +25,6 @@
 #define LC_8_N_1          (NO_PARITY << 3 | ONE_STOP_BIT << 2 | DAT_LEN_8_BITS)
 
 #include <stdint.h>
-
-uint32_t saved_regs[16] = {0xcafebabe};
 
 volatile uint32_t debug = 0xdeadbeef;
 
